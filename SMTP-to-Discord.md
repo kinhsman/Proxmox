@@ -95,15 +95,9 @@ In your Proxmox web interface:
 
 ### (Optional) Step: Silence Gmail Push Notifications
 To prevent duplicate notifications on your Gmail mobile app:
-1. Open the Gmail app on your device
-2. Go to Settings → `YOUR_GMAIL_USERNAME@gmail.com`
-3. Tap "Manage Labels"
-4. Find and select the "proxmoxalerts" label (it appears after first email arrives)
-5. Toggle off "Label notifications" or "Notify for every message"
-6. Alternatively, create a filter in Gmail web:
-   - Go to Settings → Filters and Blocked Addresses
-   - Create new filter with `to:YOUR_GMAIL_USERNAME+proxmoxalerts@gmail.com`
-   - Apply action: Skip Inbox and Apply label "proxmoxalerts"
+1. Go to Settings → Filters and Blocked Addresses
+2. Create new filter with `to:YOUR_GMAIL_USERNAME+proxmoxalerts@gmail.com`
+3. Apply action: Skip Inbox and Apply label "proxmoxalerts"
 
 ### Step 5: Test the Setup
 1. In Proxmox, trigger a test notification
