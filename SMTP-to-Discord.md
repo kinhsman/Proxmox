@@ -79,7 +79,7 @@ function forwardProxmoxAlertsToDiscord() {
 ### Step 3: Create Gmail App Password
 1. Go to [Google Account App Passwords](https://myaccount.google.com/apppasswords)
 2. Generate a new app password
-3. Save this 16-character password securely - you'll need it later
+3. Save this 16-character password securely - you'll need it in `Step 4`
 
 ### Step 4: Configure Proxmox SMTP
 In your Proxmox web interface:
