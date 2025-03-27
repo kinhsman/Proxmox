@@ -93,7 +93,7 @@ In your Proxmox web interface:
 3. Leave other settings as default
 4. Save the configuration
 
-### Optional Step: Silence Gmail Push Notifications
+### (Optional) Step: Silence Gmail Push Notifications
 To prevent duplicate notifications on your Gmail mobile app:
 1. Open the Gmail app on your device
 2. Go to Settings → `YOUR_GMAIL_USERNAME@gmail.com`
