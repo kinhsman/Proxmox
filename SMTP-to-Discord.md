@@ -1,6 +1,7 @@
 # Proxmox Alerts to Discord Integration
 
-This project forwards Proxmox alerts from Gmail to a Discord channel using Google Apps Script and Gmail's SMTP server.
+This project forwards Proxmox alerts from Gmail to a Discord channel using Google Apps Script and Gmail's SMTP server. 
+The primary reason for this implementation is to handle Discord's 2000-character limit, truncating messages appropriately to ensure compatibility.
 
 ## Setup Instructions
 
