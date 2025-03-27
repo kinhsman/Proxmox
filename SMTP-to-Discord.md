@@ -9,17 +9,12 @@ This project forwards Proxmox alerts from Gmail to a Discord channel using Googl
 - A Discord server where you have permission to create webhooks
 - A Proxmox server
 
-### Step 1: Create Gmail App Password
-1. Go to [Google Account App Passwords](https://myaccount.google.com/apppasswords)
-2. Generate a new app password
-3. Save this 16-character password securely - you'll need it later
-
-### Step 2: Create Discord Webhook
+### Step 1: Create Discord Webhook
 1. In your Discord server, go to Server Settings → Integrations → Webhooks
 2. Create a new webhook and copy its URL
 3. Choose the channel where alerts should be posted
 
-### Step 3: Set Up Google Apps Script
+### Step 2: Set Up Google Apps Script
 1. Navigate to [Google Apps Script](https://script.google.com/)
 2. Click "New Project"
 3. Replace the default code with:
@@ -80,6 +75,11 @@ function forwardProxmoxAlertsToDiscord() {
 6. Authorize the script:
    - Click "Run" and grant necessary permissions when prompted
    - Accept the Google authorization prompts
+
+### Step 3: Create Gmail App Password
+1. Go to [Google Account App Passwords](https://myaccount.google.com/apppasswords)
+2. Generate a new app password
+3. Save this 16-character password securely - you'll need it later
 
 ### Step 4: Configure Proxmox SMTP
 In your Proxmox web interface:
