@@ -58,14 +58,14 @@ function forwardProxmoxAlertsToDiscord() {
 }
 ```
 4. Update these variables:
-   - Replace YOUR_DISCORD_WEBHOOK_URL_HERE with your Discord webhook URL
-   - Replace YOUR_GMAIL_USERNAME with your Gmail username
+   - Replace `YOUR_DISCORD_WEBHOOK_URL_HERE` with your Discord webhook URL
+   - Replace `YOUR_GMAIL_USERNAME` with your Gmail username
 
 5. Set up a trigger:
    - Click the clock icon (Triggers) in the left sidebar
    - Click "+ Add Trigger"
    - Configure:
-     - Function: forwardProxmoxAlertsToDiscord
+     - Function: `forwardProxmoxAlertsToDiscord`
      - Deployment: Head
      - Event source: Time-driven
      - Type: Minutes timer
@@ -83,11 +83,10 @@ function forwardProxmoxAlertsToDiscord() {
 
 ### Step 4: Configure Proxmox SMTP
 In your Proxmox web interface:
-1. Go to Datacenter → Notifications
+1. Go to `Datacenter` → `Notifications`
 2. Add a new SMTP server with these settings:
    - Server: `smtp.gmail.com`
-   - Port: 587 (default)
-   - Encryption: STARTTLS
+   - Encryption: `STARTTLS`
    - Username: `YOUR_GMAIL_USERNAME@gmail.com`
    - Password: Your app password from Step 1
    - Additional Recipients: `YOUR_GMAIL_USERNAME+proxmoxalerts@gmail.com`
