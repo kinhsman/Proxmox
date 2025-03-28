@@ -55,6 +55,8 @@ function forwardProxmoxAlertsToDiscord() {
         message.markRead();
       }
     }
+    // Move the entire thread to Trash after processing
+    threads[i].moveToTrash();
   }
 }
 ```
