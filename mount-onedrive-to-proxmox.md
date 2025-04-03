@@ -25,7 +25,7 @@ This guide provides step-by-step instructions on how to mount your OneDrive stor
 3.  **Install `rclone`:**
 
     ```bash
-    sudo -v ; curl [https://rclone.org/install.sh](https://rclone.org/install.sh) | sudo bash
+    sudo -v ; curl https://rclone.org/install.sh | sudo bash
     ```
 
 4.  **Configure `rclone` for OneDrive:**
