@@ -93,7 +93,7 @@ This guide provides step-by-step instructions on how to mount your OneDrive stor
 
     * Ensure the service is running without errors.
 
-## Testing and Cleanup (Optional)
+## (Optional) Testing and Cleanup
 
 1.  **Test Write Speed with a Test File:**
 
