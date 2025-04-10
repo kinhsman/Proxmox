@@ -7,4 +7,4 @@ bash -c "grep -q '^HandlePowerKey=' /etc/systemd/logind.conf && sed -i 's/^Handl
 https://github.com/kinhsman/Proxmox/blob/main/SMTP-to-Discord.md
 
 # Mount OneDrive to Proxmox
-
+https://github.com/kinhsman/Proxmox/blob/main/mount-onedrive-to-proxmox.md
