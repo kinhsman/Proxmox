@@ -18,3 +18,18 @@
 # Mount OneDrive to Proxmox
    https://github.com/kinhsman/Proxmox/blob/main/mount-onedrive-to-proxmox.md
 
+# Edit the login banner for Docker LXC
+   ```
+   nano /etc/profile.d/00_lxc-details.sh 
+   ```
+   ```
+   echo -e ""
+   echo ""
+   echo -e "    🖥️  \e[m\e[33m OS: \e[1;92mDebian GNU/Linux - Version: 12\e[m"
+   echo -e "    🏠  \e[m\e[33m Hostname: \e[1;92m$(hostname)\e[m"
+   echo -e "    💡  \e[m\e[33m IP Address: \e[1;92m$(hostname -I | awk '{print $1}')\e[m"
+   echo -e "    🐳  \e[m\e[33m Running Docker Containers:\e[m"
+   for container in $(docker ps -a --format '{{.Names}}' | sort); do
+       printf "          \e[1;92m%s\e[m\n" "$container"
+   done
+   ```
