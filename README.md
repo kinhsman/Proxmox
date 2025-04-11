@@ -8,3 +8,13 @@ https://github.com/kinhsman/Proxmox/blob/main/SMTP-to-Discord.md
 
 # Mount OneDrive to Proxmox
 https://github.com/kinhsman/Proxmox/blob/main/mount-onedrive-to-proxmox.md
+
+# Mount a folder in the host to the LXC container:
+1. Create a mount folder inside the LXC first:
+   ```
+   mkdir -p /mnt/mymedia
+   ```
+2. Power off the LXC and add the following to the LXC config file
+   ```
+   echo 'lxc.mount.entry: /mnt/onedrive mnt/mymedia none bind,ro 0 0' >> /etc/pve/lxc/<CTID>.confg
+   ```
