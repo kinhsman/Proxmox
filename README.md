@@ -20,6 +20,8 @@
 
 # Edit the login banner for Docker LXC
    ```
+   chmod -x /etc/update-motd.d/*
+   truncate -s 0 /etc/motd
    nano /etc/profile.d/00_lxc-details.sh 
    ```
    ```
