@@ -9,7 +9,7 @@
    ```
 2. Power off the LXC and add the following to the LXC config file
    ```
-   echo 'lxc.mount.entry: /mnt/onedrive mnt/mymedia none bind,ro 0 0' >> /etc/pve/lxc/<CTID>.confg
+   echo 'lxc.mount.entry: /mnt/onedrive mnt/mymedia none bind,ro 0 0' >> /etc/pve/lxc/<CTID>.conf
    ```
 
 # Configure SMTP notifications to be relayed to Discord
