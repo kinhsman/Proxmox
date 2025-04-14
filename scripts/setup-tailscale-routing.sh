@@ -25,5 +25,8 @@ sysctl -p /etc/sysctl.d/99-tailscale.conf
 
 echo "[+] Installing Tailscale..."
 curl -fsSL https://tailscale.com/install.sh | sh
-
+systemctl enable tailscaled
+systemctl start tailscaled
+echo "[+] Installing Tailscale..."
+systemctl status tailscaled
 echo "[✓] Done! Tailscale installed and forwarding enabled."
