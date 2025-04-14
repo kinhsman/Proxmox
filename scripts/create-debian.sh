@@ -21,6 +21,7 @@ variables
 color
 catch_errors
 
+NEXTID=$(pvesh get /cluster/nextid)
 # Prompt for minimal required inputs
 echo -n "Enter Container ID: "
 read CT_ID
