@@ -24,6 +24,4 @@ echo 'net.ipv6.conf.all.forwarding = 1' >> /etc/sysctl.d/99-tailscale.conf
 sysctl -p /etc/sysctl.d/99-tailscale.conf
 systemctl enable tailscaled
 systemctl start tailscaled
-echo "[+] Verifying Tailscale status..."
-systemctl status tailscaled.service | grep -e Status -e Active
 echo "[✓] Done! Tailscale forwarding enabled."
