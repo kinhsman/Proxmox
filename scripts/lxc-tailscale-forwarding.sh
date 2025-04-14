@@ -22,5 +22,8 @@ echo "[+] Enabling IP forwarding..."
 echo 'net.ipv4.ip_forward = 1' >> /etc/sysctl.d/99-tailscale.conf
 echo 'net.ipv6.conf.all.forwarding = 1' >> /etc/sysctl.d/99-tailscale.conf
 sysctl -p /etc/sysctl.d/99-tailscale.conf
-
+systemctl enable tailscaled
+systemctl start tailscaled
+echo "[+] Verifying Tailscale status..."
+systemctl status tailscaled
 echo "[✓] Done! Tailscale forwarding enabled."
