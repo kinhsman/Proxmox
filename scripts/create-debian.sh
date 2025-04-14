@@ -1,35 +1,28 @@
-[source: 246] #!/usr/bin/env bash
-# MODIFIED: Updated source URL to point to the community-scripts repository if that was intended
-# If your 'build.func' is local, adjust the source line accordingly.
-# Example: source /path/to/your/modified/build.func
-source <(curl -fsSL https://raw.githubusercontent.com/kinhsman/Proxmox/main/scripts/build.func) # Or your local path
+#!/usr/bin/env bash
+source <(curl -fsSL https://raw.githubusercontent.com/kinhsman/ProxmoxVE/main/misc/build.func)
+
 
 APP="Debian"
 var_tags="${var_tags:-os}"
-var_cpu="${var_cpu:-1}"        # Default CPU cores
-var_ram="${var_ram:-512}"       # Default RAM in MiB
-var_disk="${var_disk:-2}"       # Default Disk size in GB (Will be prompted)
-var_os="${var_os:-debian}"      # Default OS type
-var_version="${var_version:-12}"  # Default OS version
-var_unprivileged="${var_unprivileged:-1}" # Default container type (1=unprivileged)
-
-# These variables provide defaults that base_settings in build.func will use.
-# The modified build.func ensures only Container ID, Hostname, and Disk Size are prompted.
+var_cpu="${var_cpu:-1}"
+var_ram="${var_ram:-512}"
+var_disk="${var_disk:-2}"
+var_os="${var_os:-debian}"
+var_version="${var_version:-12}"
+var_unprivileged="${var_unprivileged:-1}"
 
 header_info "$APP"
 variables
 color
 catch_errors
 
-# update_script function remains unchanged for in-container updates
 function update_script() {
   header_info
   check_container_storage
   check_container_resources
-  if [[ !
-[source: 247] -d /var ]]; then
+  if [[ ! -d /var ]]; then
     msg_error "No ${APP} Installation Found!"
-[source: 248] exit
+    exit
   fi
   msg_info "Updating $APP LXC"
   $STD apt-get update
@@ -38,13 +31,42 @@ function update_script() {
   exit
 }
 
-# Call start function from the modified build.func
-start
 
-# Call build_container from the modified build.func
 build_container
+description
 
-# Call description function from the modified build.func
+msg_ok "Completed Successfully!\n"
+echo -e "${CREATING}${GN}${APP} setup has been successfully initialized!${CL}"
+
+APP="Debian"
+var_tags="os"
+var_cpu="1"
+var_ram="512"
+var_disk="2"
+var_os="debian"
+var_version="12"
+var_unprivileged="1"
+
+DISABLEIP6="yes"
+VERB="yes"
+PW=""
+METHOD="default"
+
+base_settings "$VERB"
+header_info
+variables
+color
+catch_errors
+
+# Manual prompts for hostname, CT ID, disk size only
+echo -n "Enter Container ID: "
+read CT_ID
+echo -n "Enter Hostname: "
+read HN
+echo -n "Enter Disk Size (in GB): "
+read DISK_SIZE
+
+build_container
 description
 
 msg_ok "Completed Successfully!\n"
