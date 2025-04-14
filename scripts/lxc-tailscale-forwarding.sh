@@ -25,5 +25,5 @@ sysctl -p /etc/sysctl.d/99-tailscale.conf
 systemctl enable tailscaled
 systemctl start tailscaled
 echo "[+] Verifying Tailscale status..."
-systemctl status tailscaled
+systemctl status tailscaled.service | grep -e Status -e Active
 echo "[✓] Done! Tailscale forwarding enabled."
