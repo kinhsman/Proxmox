@@ -1,7 +1,14 @@
 #!/bin/bash
 
-# Exit immediately if a command exits with a non-zero status.
+# Exit on any error
 set -e
+
+# Check for sudo and install if missing
+if ! command -v sudo &> /dev/null; then
+  echo "sudo is not installed. Installing..."
+  apt-get update
+  apt-get install -y sudo
+fi
 
 # Update package list and install curl
 echo "Installing curl..."
@@ -17,5 +24,5 @@ echo "Installing Speedtest CLI..."
 sudo apt-get install -y speedtest
 
 # Confirm installation
-echo "Speedtest CLI installed successfully."
+echo "Speedtest CLI installed successfully:"
 speedtest --version
