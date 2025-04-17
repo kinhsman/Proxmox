@@ -22,6 +22,7 @@
    ```
    chmod -x /etc/update-motd.d/*
    truncate -s 0 /etc/motd
+   echo > /etc/profile.d/00_lxc-details.sh 
    nano /etc/profile.d/00_lxc-details.sh 
    ```
    ```
