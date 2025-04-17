@@ -31,9 +31,9 @@ echo
 echo
 echo -e "\033[1;92m        Jellyfin Media Server\033[0m"
 echo
-echo -e "    🖥️  \033[0m\033[33m OS:       \033[1;92mUbuntu - Version: 22.04\033[0m"
-echo -e "    🏠  \033[0m\033[33m Hostname: \033[1;92m$(hostname)\033[0m"
-echo -e "    💡  \033[0m\033[33m Address : \033[1;92mhttp://$(hostname -I | awk '{print $1}'):8096\033[0m"
+echo -e "    🖥️   \033[0m\033[33m OS:       \033[1;92m$(grep '^PRETTY_NAME=' /etc/os-release | cut -d= -f2 | tr -d '\"')\033[0m"
+echo -e "    🏠   \033[0m\033[33m Hostname: \033[1;92m$(hostname)\033[0m"
+echo -e "    💡   \033[0m\033[33m Address : \033[1;92mhttp://$(hostname -I | awk '{print $1}'):8096\033[0m"
 echo
 echo
 
