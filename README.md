@@ -27,7 +27,7 @@
    ```
    ```
    echo
-   echo -e "\e[1;92m         DOCKER SERVER\e[0m"
+   echo -e "\e[1;92m         Docker Server LXC\e[0m"
    echo
    echo -e "    🖥️  \e[0m\e[33m  OS: \e[1;92m$(grep '^PRETTY_NAME=' /etc/os-release | cut -d= -f2 | tr -d '\"')\e[0m"
    echo -e "    🏠  \e[0m\e[33m Hostname: \e[1;92m$(hostname)\e[0m"
