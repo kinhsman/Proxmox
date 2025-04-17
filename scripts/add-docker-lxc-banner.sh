@@ -1,4 +1,4 @@
-# bash -c "$(curl -fsSL <url>)"
+# bash -c "$(curl -fsSL https://raw.githubusercontent.com/kinhsman/Proxmox/refs/heads/main/scripts/add-docker-lxc-banner.sh)"
 #!/bin/bash
 
 # Disable default MOTD scripts
