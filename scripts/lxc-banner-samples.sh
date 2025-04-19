@@ -7,8 +7,8 @@
 echo
 echo -e "\e[1;92m         DOCKER SERVER\e[0m"
 echo
-echo -e "    🖥️  \e[0m\e[33m  OS: \e[1;92m$(grep '^PRETTY_NAME=' /etc/os-release | cut -d= -f2 | tr -d '\"')\e[0m"
-echo -e "    🏠  \e[0m\e[33m Hostname: \e[1;92m$(hostname)\e[0m"
+echo -e "    🖥️  \e[0m\e[33m OS:         \e[1;92m$(grep '^PRETTY_NAME=' /etc/os-release | cut -d= -f2 | tr -d '\"')\e[0m"
+echo -e "    🏠  \e[0m\e[33m Hostname:   \e[1;92m$(hostname)\e[0m"
 echo -e "    💡  \e[0m\e[33m IP Address: \e[1;92m$(hostname -I | awk '{print $1}')\e[0m"
 echo -e "    🐳  \e[0m\e[33m Running Docker Containers:\e[0m"
 
