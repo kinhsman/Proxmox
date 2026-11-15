@@ -149,6 +149,6 @@ cat <<EOF
 
   Your browser will warn about the certificate the first time: click Advanced, then Proceed.
   Saved to $INFO
-  Remove it: bash -c "$(curl -fsSL https://raw.githubusercontent.com/kinhsman/Proxmox/main/scripts/throwaway-browser.sh)" -- uninstall
+  Remove it: bash -c "\$(curl -fsSL https://raw.githubusercontent.com/kinhsman/Proxmox/main/scripts/throwaway-browser.sh)" -- uninstall
 
 EOF
