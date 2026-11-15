@@ -45,3 +45,22 @@
    echo
    echo
    ```
+
+# Throwaway browser in a Debian LXC
+A full Chromium you open from any other browser, with a login. Handy for testing a site from another network (for example, through a hotel or VPN exit). Closing the last tab reopens Chromium instead of leaving a black screen.
+
+1. On the Proxmox host, turn nesting on for the LXC:
+   ```
+   pct set <CTID> --features nesting=1,keyctl=1 && pct reboot <CTID>
+   ```
+2. Inside the LXC (Debian 12 or 13), as root. It prints the URL, user and password at the end:
+   ```
+   apt-get update -qq && apt-get install -y -qq curl && bash -c "$(curl -fsSL https://raw.githubusercontent.com/kinhsman/Proxmox/main/scripts/throwaway-browser.sh)"
+   ```
+   Options: `BROWSER_USER=me BROWSER_PASS=secret BROWSER_DNS=10.0.0.1 bash -c "$(curl -fsSL ...)"`
+
+   Remove it:
+   ```
+   bash -c "$(curl -fsSL https://raw.githubusercontent.com/kinhsman/Proxmox/main/scripts/throwaway-browser.sh)" -- uninstall
+   ```
+   Needs 2 cores, 2 GB RAM and 10 GB disk. The first run downloads about 1.5 GB.
