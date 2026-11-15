@@ -75,6 +75,7 @@ DNS_ARGS=()
 # 3. The browser
 say "Downloading the browser (about 1.5 GB the first time)"
 docker pull -q "$IMAGE" >/dev/null
+docker stop -t 15 "$NAME" >/dev/null 2>&1 || true
 docker rm -f "$NAME" >/dev/null 2>&1 || true
 docker run -d --name "$NAME" \
   --restart unless-stopped \
@@ -84,6 +85,7 @@ docker run -d --name "$NAME" \
   -e TZ="$TZ_NAME" -e PUID=1000 -e PGID=1000 \
   -e CUSTOM_USER="$USER_NAME" -e PASSWORD="$PASS" \
   -e TITLE="Throwaway browser" \
+  -e CHROME_CLI="--hide-crash-restore-bubble" \
   -p "$PORT":3001 \
   -v "$NAME-config":/config \
   "$IMAGE" >/dev/null
@@ -105,7 +107,7 @@ while true; do
   sleep 1
   docker exec \$C pgrep -f /usr/lib/chromium/chromium >/dev/null && continue
   docker exec -d -u abc -e HOME=/config -e DISPLAY=:1 -e PIXELFLUX_WAYLAND=true \\
-    -e WAYLAND_DISPLAY=\$WD -e XDG_RUNTIME_DIR=/config/.XDG \$C wrapped-chromium
+    -e WAYLAND_DISPLAY=\$WD -e XDG_RUNTIME_DIR=/config/.XDG \$C wrapped-chromium --hide-crash-restore-bubble
   logger -t $NAME "reopened chromium"
   sleep 5
 done
