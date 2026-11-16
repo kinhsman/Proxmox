@@ -3,6 +3,8 @@
 #
 # Run it in the Proxmox host shell: it makes a new Debian LXC, sets it all up inside, and prints
 # the URL, user and password. Run it inside an existing Debian LXC or box: it sets up that box.
+# Every shell login shows the URL and login again. In an LXC it made, the Proxmox Console logs
+# in as root by itself.
 #
 #   Install:    bash -c "$(curl -fsSL https://raw.githubusercontent.com/kinhsman/Proxmox/main/scripts/throwaway-browser.sh)"
 #   Options:    BROWSER_USER=me BROWSER_PASS=secret BROWSER_DNS=10.0.0.1 bash -c "$(curl -fsSL https://raw.githubusercontent.com/kinhsman/Proxmox/main/scripts/throwaway-browser.sh)"
@@ -31,6 +33,8 @@ INFO=/root/browser-login.txt
 IMAGE=lscr.io/linuxserver/chromium:latest
 WATCHDOG=/usr/local/bin/browser-watchdog.sh
 UNIT=/etc/systemd/system/browser-watchdog.service
+WELCOME=/etc/profile.d/throwaway-browser.sh
+AUTOLOGIN=/etc/systemd/system/container-getty@1.service.d/autologin.conf
 
 say()  { printf '\033[1;36m==>\033[0m %s\n' "$*"; }
 die()  { printf '\033[1;31mError:\033[0m %s\n' "$*" >&2; exit 1; }
@@ -103,7 +107,7 @@ fi
 if [ "${1:-}" = uninstall ]; then
   say "Removing the throwaway browser"
   systemctl disable --now browser-watchdog 2>/dev/null || true
-  rm -f "$WATCHDOG" "$UNIT"; systemctl daemon-reload 2>/dev/null || true
+  rm -f "$WATCHDOG" "$UNIT" "$WELCOME"; systemctl daemon-reload 2>/dev/null || true
   if command -v docker >/dev/null; then
     docker rm -f "$NAME" >/dev/null 2>&1 || true
     docker volume rm "$NAME-config" >/dev/null 2>&1 || true
@@ -208,6 +212,35 @@ for _ in $(seq 1 90); do
   sleep 2
 done
 [ "$code" = 401 ] || [ "$code" = 200 ] || die "the browser did not come up; see: docker logs $NAME"
+
+# 6. Welcome screen: every login shell shows the URL and login (read fresh, so a new IP shows).
+cat > "$WELCOME" <<EOF
+# Throwaway browser login, shown at every shell login. Added by throwaway-browser.sh.
+case \$- in *i*) ;; *) return 0 2>/dev/null || exit 0 ;; esac
+[ -r $INFO ] || return 0 2>/dev/null || exit 0
+_tb_ip=\$(hostname -I 2>/dev/null | awk '{print \$1}')
+_tb_user=\$(sed -n 's/^User: *//p' $INFO)
+_tb_pass=\$(sed -n 's/^Password: *//p' $INFO)
+_tb_state=\$(docker inspect -f '{{.State.Status}}' $NAME 2>/dev/null || echo "not found")
+printf '\n  \033[1;36mThrowaway browser\033[0m (%s)\n' "\$_tb_state"
+printf '  \033[33mURL:\033[0m       \033[1;32mhttps://%s:$PORT/\033[0m\n' "\${_tb_ip:-<this-box-ip>}"
+printf '  \033[33mUser:\033[0m      \033[1;32m%s\033[0m\n' "\$_tb_user"
+printf '  \033[33mPassword:\033[0m  \033[1;32m%s\033[0m\n\n' "\$_tb_pass"
+unset _tb_ip _tb_user _tb_pass _tb_state
+EOF
+chmod 644 "$WELCOME"
+
+# 7. In an LXC this script made, the Proxmox Console logs in as root by itself.
+if [ -n "${BROWSER_IN_LXC:-}" ]; then
+  mkdir -p "$(dirname "$AUTOLOGIN")"
+  cat > "$AUTOLOGIN" <<'EOF'
+[Service]
+ExecStart=
+ExecStart=-/sbin/agetty --autologin root --noclear --keep-baud tty%I 115200,38400,9600 $TERM
+EOF
+  systemctl daemon-reload
+  systemctl restart container-getty@1.service 2>/dev/null || true
+fi
 
 IP=$(hostname -I 2>/dev/null | awk '{print $1}')
 URL="https://${IP:-<this-box-ip>}:$PORT/"
