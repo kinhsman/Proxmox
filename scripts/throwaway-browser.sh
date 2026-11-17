@@ -4,7 +4,7 @@
 # Run it in the Proxmox host shell: it makes a new Debian LXC, sets it all up inside, and prints
 # the URL, user and password. Run it inside an existing Debian LXC or box: it sets up that box.
 # Every shell login shows the URL and login again. In an LXC it made, the Proxmox Console logs
-# in as root by itself.
+# in as root by itself, and its Notes show the URL and login.
 #
 #   Install:    bash -c "$(curl -fsSL https://raw.githubusercontent.com/kinhsman/Proxmox/main/scripts/throwaway-browser.sh)"
 #   Options:    BROWSER_USER=me BROWSER_PASS=secret BROWSER_DNS=10.0.0.1 bash -c "$(curl -fsSL https://raw.githubusercontent.com/kinhsman/Proxmox/main/scripts/throwaway-browser.sh)"
@@ -108,6 +108,14 @@ if command -v pct >/dev/null && [ -d /etc/pve ]; then
     BROWSER_USER="${BROWSER_USER:-}" BROWSER_PASS="${BROWSER_PASS:-}" BROWSER_DNS="${BROWSER_DNS:-}" \
     BROWSER_TZ="$TZ_HOST" BROWSER_PORT="${BROWSER_PORT:-}" BROWSER_WIDEVINE="${BROWSER_WIDEVINE:-}" BROWSER_IN_LXC="$CTID" \
     bash /root/throwaway-browser.sh
+
+  # The LXC's Notes (its Summary page) show the URL and login too.
+  LOGIN=$(pct exec "$CTID" -- cat "$INFO" 2>/dev/null || true)
+  L_URL=$(printf '%s\n' "$LOGIN" | sed -n 's/^URL: *//p')
+  L_USER=$(printf '%s\n' "$LOGIN" | sed -n 's/^User: *//p')
+  L_PASS=$(printf '%s\n' "$LOGIN" | sed -n 's/^Password: *//p')
+  [ -n "$L_URL" ] && pct set "$CTID" --description "$(printf 'URL: [%s](%s)\n\nUser: `%s`\n\nPassword: `%s`\n\nRemove: `pct stop %s && pct destroy %s`\n' \
+    "$L_URL" "$L_URL" "$L_USER" "$L_PASS" "$CTID" "$CTID")"
   exit 0
 fi
 
