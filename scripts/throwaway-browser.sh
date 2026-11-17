@@ -84,13 +84,15 @@ if command -v pct >/dev/null && [ -d /etc/pve ]; then
     --description "Throwaway browser. Remove: pct stop $CTID && pct destroy $CTID" >/dev/null
   pct start "$CTID"
 
-  say "Waiting for the network"
-  for _ in $(seq 1 60); do
-    pct exec "$CTID" -- getent hosts deb.debian.org >/dev/null 2>&1 && break
-    sleep 2
+  # A first boot can take minutes on a busy or slow disk, so wait up to 15 and say so.
+  say "Waiting for the network (a first boot can take a few minutes on a busy disk)"
+  START=$SECONDS; NEXT=60
+  until pct exec "$CTID" -- getent hosts deb.debian.org >/dev/null 2>&1; do
+    WAITED=$((SECONDS - START))
+    [ "$WAITED" -ge 900 ] && die "LXC $CTID has no internet after 15 minutes (DHCP on $BRIDGE?). Remove it: pct stop $CTID && pct destroy $CTID"
+    if [ "$WAITED" -ge "$NEXT" ]; then say "Still waiting ($((WAITED / 60)) min)"; NEXT=$((NEXT + 60)); fi
+    sleep 5
   done
-  pct exec "$CTID" -- getent hosts deb.debian.org >/dev/null 2>&1 \
-    || die "LXC $CTID has no internet (DHCP on $BRIDGE?). Remove it: pct stop $CTID && pct destroy $CTID"
 
   # Hand this very script to the container: the file when run as one, else the text bash -c got.
   TMP=$(mktemp)
