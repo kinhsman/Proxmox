@@ -59,6 +59,10 @@ Run in the Proxmox host shell. It makes a new Debian LXC (2 cores, 2 GB RAM, 10 
 
    The first run downloads about 1.5 GB.
 
+   Netflix, Disney+ and Spotify play: the script adds Widevine (the DRM piece plain Chromium lacks, Netflix error M7701-1003) from Google's Chrome package, and every re-run refreshes it. 64-bit Intel/AMD only. Skip it with `BROWSER_WIDEVINE=0`.
+
+   It stays signed in like a regular PC: logins and tabs come back after the browser or the LXC restarts.
+
    Forgot the login? Open the LXC's Console in Proxmox: it logs in as root by itself and shows the URL, user and password.
 
 Already have a Debian LXC? Turn nesting on from the host (`pct set <CTID> --features nesting=1,keyctl=1 && pct reboot <CTID>`), then run the same command inside it as root (`apt-get install -y curl` first on a bare template). Remove it from inside with `bash -c "$(curl -fsSL ...)" -- uninstall`.

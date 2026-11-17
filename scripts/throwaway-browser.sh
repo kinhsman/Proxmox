@@ -17,6 +17,7 @@
 #   BROWSER_DNS      DNS server to use     (default: whatever the box uses)
 #   BROWSER_TZ       time zone             (default: this box's)
 #   BROWSER_PORT     HTTPS port            (default: 3001)
+#   BROWSER_WIDEVINE 0 skips Widevine, the DRM piece Netflix, Disney+ and Spotify need (default: 1)
 # Proxmox host only:
 #   BROWSER_CTID     container ID          (default: next free)
 #   BROWSER_HOSTNAME container name        (default: throwaway-browser)
@@ -35,6 +36,10 @@ WATCHDOG=/usr/local/bin/browser-watchdog.sh
 UNIT=/etc/systemd/system/browser-watchdog.service
 WELCOME=/etc/profile.d/throwaway-browser.sh
 AUTOLOGIN=/etc/systemd/system/container-getty@1.service.d/autologin.conf
+DATA=/opt/throwaway-browser
+WIDEVINE=$DATA/WidevineCdm
+POLICIES=$DATA/policies
+CHROME_DEB=https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 
 say()  { printf '\033[1;36m==>\033[0m %s\n' "$*"; }
 die()  { printf '\033[1;31mError:\033[0m %s\n' "$*" >&2; exit 1; }
@@ -99,7 +104,7 @@ if command -v pct >/dev/null && [ -d /etc/pve ]; then
   pct exec "$CTID" -- env -i PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
     HOME=/root LANG=C.UTF-8 TERM=xterm \
     BROWSER_USER="${BROWSER_USER:-}" BROWSER_PASS="${BROWSER_PASS:-}" BROWSER_DNS="${BROWSER_DNS:-}" \
-    BROWSER_TZ="$TZ_HOST" BROWSER_PORT="${BROWSER_PORT:-}" BROWSER_IN_LXC="$CTID" \
+    BROWSER_TZ="$TZ_HOST" BROWSER_PORT="${BROWSER_PORT:-}" BROWSER_WIDEVINE="${BROWSER_WIDEVINE:-}" BROWSER_IN_LXC="$CTID" \
     bash /root/throwaway-browser.sh
   exit 0
 fi
@@ -113,7 +118,7 @@ if [ "${1:-}" = uninstall ]; then
     docker volume rm "$NAME-config" >/dev/null 2>&1 || true
     docker image rm "$IMAGE" >/dev/null 2>&1 || true
   fi
-  rm -f "$INFO"
+  rm -f "$INFO"; rm -rf "$DATA"
   say "Done. Docker itself is left installed (apt purge docker.io to remove it)."
   exit 0
 fi
@@ -152,6 +157,40 @@ DNS_ARGS=()
 # 3. The browser
 say "Downloading the browser (about 1.5 GB the first time)"
 docker pull -q "$IMAGE" >/dev/null
+
+# Widevine: Chromium ships without it, so Netflix stops with M7701-1003 and other streaming sites
+# will not play. Taken from Google's own Chrome package and kept on this box, then handed to the
+# container read-only, so it survives the container being remade. Every run fetches the current one;
+# if that fails, the one already here stays, and with none the browser still works, minus DRM video.
+WV_ARGS=()
+if [ "${BROWSER_WIDEVINE:-1}" != 0 ]; then
+  if [ "$(dpkg --print-architecture 2>/dev/null)" != amd64 ]; then
+    say "Skipping Widevine: Google only makes it for 64-bit Intel/AMD Linux"
+  else
+    say "Getting Widevine from Google Chrome (about 120 MB)"
+    WT=$(mktemp -d)
+    if curl -fsSL "$CHROME_DEB" -o "$WT/chrome.deb" && dpkg-deb -x "$WT/chrome.deb" "$WT/x" \
+       && [ -f "$WT/x/opt/google/chrome/WidevineCdm/manifest.json" ]; then
+      mkdir -p "$DATA"; rm -rf "$WIDEVINE"
+      cp -a "$WT/x/opt/google/chrome/WidevineCdm" "$WIDEVINE"
+    elif [ -d "$WIDEVINE" ]; then
+      say "Could not download Widevine; keeping the one already here"
+    else
+      say "Could not download Widevine; streaming sites will not play video"
+    fi
+    rm -rf "$WT"
+  fi
+  [ -f "$WIDEVINE/manifest.json" ] && WV_ARGS=(-v "$WIDEVINE":/usr/lib/chromium/WidevineCdm:ro)
+fi
+
+# Stay signed in like a regular PC. Chromium here is often stopped hard (the watchdog, a restart),
+# and a fresh start throws away every session cookie, which is how most sites keep you signed in.
+# "Continue where you left off" keeps them on disk and brings the tabs back.
+mkdir -p "$POLICIES"
+cat > "$POLICIES/throwaway-browser.json" <<'EOF'
+{ "RestoreOnStartup": 1 }
+EOF
+
 docker stop -t 15 "$NAME" >/dev/null 2>&1 || true
 docker rm -f "$NAME" >/dev/null 2>&1 || true
 docker run -d --name "$NAME" \
@@ -165,6 +204,8 @@ docker run -d --name "$NAME" \
   -e CHROME_CLI="--hide-crash-restore-bubble" \
   -p "$PORT":3001 \
   -v "$NAME-config":/config \
+  "${WV_ARGS[@]}" \
+  -v "$POLICIES":/etc/chromium/policies/managed:ro \
   "$IMAGE" >/dev/null
 
 # 4. Watchdog: closing the last tab quits Chromium and the screen goes black, so reopen it.
